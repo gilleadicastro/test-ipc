@@ -2,16 +2,26 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo "Iniciando daemon...\n";
+error_log("Iniciando daemon...", 4);
 
-// tente acessar a fila
-$key = 1234;
-$queue = msg_get_queue($key);
-if (!$queue) {
-    echo "Erro ao obter fila IPC\n";
+if (!function_exists('msg_get_queue')) {
+    error_log("Função msg_get_queue não existe. IPC não está disponível.", 4);
     exit(1);
 }
 
+$key = 1234;
+$queue = msg_get_queue($key);
+if (!$queue) {
+    error_log("Erro ao obter fila IPC", 4);
+    exit(1);
+}
+
+// Mostra variáveis de ambiente do PostgreSQL
+error_log("PGHOST=" . getenv('PGHOST'), 4);
+error_log("PGPORT=" . getenv('PGPORT'), 4);
+error_log("PGDATABASE=" . getenv('PGDATABASE'), 4);
+error_log("PGUSER=" . getenv('PGUSER'), 4);
+error_log("PGPASSWORD=" . getenv('PGPASSWORD'), 4);
 
 try {
     $db = new PDO(
@@ -24,9 +34,9 @@ try {
         getenv('PGUSER'),
         getenv('PGPASSWORD')
     );
-    echo "Conectado ao banco com sucesso\n";
+    error_log("Conectado ao banco com sucesso", 4);
 } catch (PDOException $e) {
-    echo "Erro ao conectar no banco: " . $e->getMessage() . "\n";
+    error_log("Erro ao conectar no banco: " . $e->getMessage(), 4);
     exit(1);
 }
 
