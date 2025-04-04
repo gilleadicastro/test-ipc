@@ -1,7 +1,16 @@
 <?php
 $key = 1234;
 $queue = msg_get_queue($key);
-$db = new PDO('sqlite:/app/db/db.sqlite');
+$db = new PDO(
+    sprintf(
+        'pgsql:host=%s;port=%s;dbname=%s',
+        getenv('PGHOST'),
+        getenv('PGPORT'),
+        getenv('PGDATABASE')
+    ),
+    getenv('PGUSER'),
+    getenv('PGPASSWORD')
+);
 
 echo "Daemon rodando...\n";
 

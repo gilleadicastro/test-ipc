@@ -1,13 +1,11 @@
 FROM php:8.2-cli
 
-# Instala bibliotecas necessárias para sysvmsg e pdo_sqlite
 RUN apt-get update && \
-    apt-get install -y libsqlite3-dev && \
-    docker-php-ext-install sysvmsg pdo_sqlite
+    apt-get install -y libpq-dev && \
+    docker-php-ext-install sysvmsg pdo_pgsql && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+COPY . .
 
-COPY daemon.php .
-
-# A pasta db será montada via volume
-CMD ["php", "/app/daemon.php"]
+CMD ["php", "daemon.php"]
