@@ -1,16 +1,34 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+echo "Iniciando daemon...\n";
+
+// tente acessar a fila
 $key = 1234;
 $queue = msg_get_queue($key);
-$db = new PDO(
-    sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
-        getenv('PGHOST'),
-        getenv('PGPORT'),
-        getenv('PGDATABASE')
-    ),
-    getenv('PGUSER'),
-    getenv('PGPASSWORD')
-);
+if (!$queue) {
+    echo "Erro ao obter fila IPC\n";
+    exit(1);
+}
+
+
+try {
+    $db = new PDO(
+        sprintf(
+            'pgsql:host=%s;port=%s;dbname=%s',
+            getenv('PGHOST'),
+            getenv('PGPORT'),
+            getenv('PGDATABASE')
+        ),
+        getenv('PGUSER'),
+        getenv('PGPASSWORD')
+    );
+    echo "Conectado ao banco com sucesso\n";
+} catch (PDOException $e) {
+    echo "Erro ao conectar no banco: " . $e->getMessage() . "\n";
+    exit(1);
+}
 
 echo "Daemon rodando...\n";
 
