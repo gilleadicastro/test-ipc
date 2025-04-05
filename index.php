@@ -17,8 +17,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<p>Nenhuma resposta recebida.</p>";
     }
 }
+
+$db = new PDO(
+    sprintf('pgsql:host=%s;port=%s;dbname=%s', getenv('PGHOST'), getenv('PGPORT'), getenv('PGDATABASE')),
+    getenv('PGUSER'),
+    getenv('PGPASSWORD')
+);
+
+$stmt = $db->prepare("SELECT * FROM dados");
+$stmt->execute();
+$dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+print_r($dados)
+
 ?>
-<form method="POST">
-    <input name="dado" placeholder="Digite algo" />
-    <button type="submit">Enviar</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPS</title>
+</head>
+<body>
+    <form method="POST">
+        <input name="dado" placeholder="Digite algo" />
+        <button type="submit">Enviar</button>
+    </form>
+    <table border="1">
+        <thead>
+            <tr><th>Dado</th></tr>
+        </thead>
+        <tbody>
+            <?php foreach ($dados as $linha): ?>
+                <tr>
+                    <td><?= htmlspecialchars($linha['coluna']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</body>
+</html>
