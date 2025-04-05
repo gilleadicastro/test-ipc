@@ -50,7 +50,7 @@ print_r($dados)
         <tbody>
             <?php foreach ($dados as $linha): ?>
                 <tr>
-                    <td><?= htmlspecialchars($linha['coluna']) ?></td>
+                    <td><?= htmlspecialchars($linha['conteudo']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
