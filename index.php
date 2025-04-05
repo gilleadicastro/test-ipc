@@ -18,15 +18,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$db = new PDO(
-    sprintf('pgsql:host=%s;port=%s;dbname=%s', getenv('PGHOST'), getenv('PGPORT'), getenv('PGDATABASE')),
-    getenv('PGUSER'),
-    getenv('PGPASSWORD')
-);
+try {
+    $db = new PDO(
+        sprintf(
+            'pgsql:host=%s;port=%s;dbname=%s',
+            getenv('PGHOST'),
+            getenv('PGPORT'),
+            getenv('PGDATABASE')
+        ),
+        getenv('PGUSER'),
+        getenv('PGPASSWORD')
+    );
+    error_log("Conectado ao banco com sucesso", 4);
+} catch (PDOException $e) {
+    error_log("Erro ao conectar no banco: " . $e->getMessage(), 4);
+    exit(1);
+}
 
-$stmt = $db->prepare("SELECT * FROM dados");
-$stmt->execute();
-$dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $db->prepare("SELECT * FROM dados");
+    $stmt->execute();
+    $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -153,11 +164,11 @@ $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr><th>Conteúdo</th></tr>
         </thead>
         <tbody>
-            <?php foreach ($dados as $linha): ?>
-                <tr>
-                    <td><?= htmlspecialchars($linha['conteudo']) ?></td>
-                </tr>
-            <?php endforeach; ?>
+        <?php foreach ($dados as $linha): ?>
+            <tr>
+                <td><?= htmlspecialchars($linha['conteudo']) ?></td>
+            </tr>
+        <?php endforeach; ?>
         </tbody>
     </table>
 </body>
